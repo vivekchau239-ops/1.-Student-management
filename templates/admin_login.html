@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Student Management System</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-page">
+    <main class="login-card">
+        <div class="login-icon" aria-hidden="true">SMS</div>
+        <h1>Administrator sign in</h1>
+        <p class="login-subtitle">Sign in to manage all student records</p>
+
+        <form method="POST" action="{{ url_for('admin_login') }}">
+            <label for="username">Admin username</label>
+            <input id="username" type="text" name="username"
+                   autocomplete="username" required autofocus>
+
+            <label for="password">Admin password</label>
+            <input id="password" type="password" name="password"
+                   autocomplete="current-password" required>
+
+            {% if message %}
+                <p class="message login-message" role="alert">{{ message }}</p>
+            {% endif %}
+
+            <button type="submit" class="login-button">Admin sign in</button>
+        </form>
+
+        <p class="auth-switch">
+            Want admin access?
+            <a href="{{ url_for('admin_register') }}">Request an admin account</a>
+        </p>
+        <p class="auth-switch">
+            <a href="{{ url_for('login') }}">Back to user sign in</a>
+        </p>
+    </main>
+</body>
+</html>

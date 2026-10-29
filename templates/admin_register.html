@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Registration | Student Management System</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-page">
+    <main class="login-card">
+        <div class="login-icon" aria-hidden="true">SMS</div>
+        <h1>Request admin account</h1>
+        <p class="login-subtitle">
+            Submit a request. An existing administrator must approve it before
+            you can sign in.
+        </p>
+
+        <nav class="account-type" aria-label="Account type">
+            <a class="account-type-link" href="{{ url_for('register') }}">
+                User account
+            </a>
+            <a class="account-type-link account-type-selected"
+               href="{{ url_for('admin_register') }}" aria-current="page">
+                Request admin account
+            </a>
+        </nav>
+
+        {% if submitted %}
+            <p class="success-message" role="status">
+                Your request has been sent. You can sign in after an administrator approves it.
+            </p>
+        {% else %}
+        <form method="POST" action="{{ url_for('admin_register') }}">
+            <label for="username">Requested admin username</label>
+            <input id="username" type="text" name="username"
+                   minlength="3" maxlength="32"
+                   autocomplete="username" required autofocus>
+
+            <label for="password">Choose a password</label>
+            <input id="password" type="password" name="password"
+                   minlength="8" autocomplete="new-password" required>
+
+            <label for="confirm-password">Confirm password</label>
+            <input id="confirm-password" type="password"
+                   name="confirm_password" minlength="8"
+                   autocomplete="new-password" required>
+
+            {% if message %}
+                <p class="message login-message" role="alert">{{ message }}</p>
+            {% endif %}
+
+            <button type="submit" class="login-button">Send admin request</button>
+        </form>
+        {% endif %}
+
+        <p class="auth-switch">
+            <a href="{{ url_for('admin_login') }}">Back to admin sign in</a>
+        </p>
+    </main>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="header">
+        <div class="brand">
+            <div class="brand-mark" aria-hidden="true">S</div>
+            <div>
+                <p class="brand-eyebrow">STUDENT PORTAL</p>
+                <h1>Student Management System</h1>
+                <p>Secure records, made simple.</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <span class="tag"><span class="status-dot"></span> Secure session</span>
+            <form method="POST" action="{{ url_for('logout') }}">
+                <button class="logout-button" type="submit">Log out</button>
+            </form>
+        </div>
+    </header>
+
+    <main class="container user-dashboard">
+        <section class="card search-card">
+            <span class="section-kicker">RECORD LOOKUP</span>
+            <h2>Find a student</h2>
+            <p class="search-notice">
+                Records are hidden until you enter a search and confirm your
+                account password. You can search by name or roll number.
+            </p>
+
+            <form method="POST" action="{{ url_for('home') }}" class="search-form">
+                <label for="student-query">Name or roll number</label>
+                <input id="student-query" type="text" name="q"
+                       placeholder="Search name or roll number"
+                       value="{{ query }}" required>
+                <label for="search-password">Account password</label>
+                <input id="search-password" type="password" name="password"
+                       autocomplete="current-password" required>
+                <button type="submit">Search records</button>
+            </form>
+
+            {% if message %}
+                <p class="message" role="alert">{{ message }}</p>
+            {% endif %}
+
+            {% if request_submitted %}
+                <p class="success-message" role="status">
+                    Your student record request was sent to an administrator for approval.
+                </p>
+            {% endif %}
+
+            {% if searched %}
+            <p class="count">Matching records: {{ students|length }}</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Roll No.</th>
+                            <th>Name</th>
+                            <th>Marks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ student.roll }}</td>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.marks }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" class="empty">
+                                No student records found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="card request-card">
+            <span class="section-kicker">CONTRIBUTE</span>
+            <h2>Suggest a record</h2>
+            <p class="search-notice">
+                Your request will be sent to an administrator. The record will
+                only appear in search after it is approved.
+            </p>
+            <form method="POST" action="{{ url_for('request_student_record') }}"
+                  class="student-request-form">
+                <label for="request-roll">Roll number</label>
+                <input id="request-roll" type="text" name="roll" required>
+
+                <label for="request-name">Student name</label>
+                <input id="request-name" type="text" name="name" required>
+
+                <label for="request-marks">Marks (0-100)</label>
+                <input id="request-marks" type="number" name="marks"
+                       min="0" max="100" step="any" required>
+
+                <button type="submit">Send request for approval</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>Student Management System | B.Tech Project</footer>
+</body>
+</html>

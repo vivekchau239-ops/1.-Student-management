@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Student Management System</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="header">
+        <div class="brand">
+            <div class="brand-mark" aria-hidden="true">S</div>
+            <div>
+                <p class="brand-eyebrow">STUDENT PORTAL · ADMIN</p>
+                <h1>Administrator dashboard</h1>
+                <p>Review requests and manage student records.</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <span class="tag"><span class="status-dot"></span> Admin access</span>
+            <form method="POST" action="{{ url_for('logout') }}">
+                <button class="logout-button" type="submit">Log out</button>
+            </form>
+        </div>
+    </header>
+
+    <main class="container admin-dashboard">
+        <div class="approval-grid">
+        <section class="card">
+            <span class="section-kicker">ACCESS CONTROL</span>
+            <h2>Admin account requests</h2>
+            <p class="count">Pending requests: {{ admin_requests|length }}</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Requested username</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for admin_request in admin_requests %}
+                        <tr>
+                            <td>{{ admin_request.username }}</td>
+                            <td>
+                                <form class="inline-form" method="POST"
+                                      action="{{ url_for('approve_admin_request', username=admin_request.username) }}">
+                                    <button type="submit">Approve</button>
+                                </form>
+                                <form class="inline-form" method="POST"
+                                      action="{{ url_for('reject_admin_request', username=admin_request.username) }}"
+                                      onsubmit="return confirm('Reject this admin request?');">
+                                    <button class="delete" type="submit">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="2" class="empty">No pending admin requests.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <span class="section-kicker">REVIEW QUEUE</span>
+            <h2>Student record requests</h2>
+            <p class="count">Pending requests: {{ student_requests|length }}</p>
+            {% if student_request_error %}
+                <p class="message" role="alert">
+                    This roll number is already in the records. The request remains pending; reject it or resolve the duplicate first.
+                </p>
+            {% endif %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Roll No.</th>
+                            <th>Name</th>
+                            <th>Marks</th>
+                            <th>Requested by</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student_request in student_requests %}
+                        <tr>
+                            <td>{{ student_request.roll }}</td>
+                            <td>{{ student_request.name }}</td>
+                            <td>{{ student_request.marks }}</td>
+                            <td>{{ student_request.requested_by }}</td>
+                            <td>
+                                <form class="inline-form" method="POST"
+                                      action="{{ url_for('approve_student_request', roll=student_request.roll) }}">
+                                    <button type="submit">Approve</button>
+                                </form>
+                                <form class="inline-form" method="POST"
+                                      action="{{ url_for('reject_student_request', roll=student_request.roll) }}"
+                                      onsubmit="return confirm('Reject this student record request?');">
+                                    <button class="delete" type="submit">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="empty">
+                                No pending student record requests.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        </div>
+
+        <section class="card">
+            <span class="section-kicker">RECORD MANAGEMENT</span>
+            <h2>Add a student</h2>
+            <form method="POST" action="{{ url_for('admin_dashboard') }}">
+                <label for="roll">Roll number</label>
+                <input id="roll" type="text" name="roll" required>
+
+                <label for="name">Student name</label>
+                <input id="name" type="text" name="name" required>
+
+                <label for="marks">Marks (0-100)</label>
+                <input id="marks" type="number" name="marks"
+                       min="0" max="100" step="any" required>
+
+                <button type="submit">Add student</button>
+            </form>
+            {% if message %}
+                <p class="message" role="alert">{{ message }}</p>
+            {% endif %}
+        </section>
+
+        <section class="card">
+            <span class="section-kicker">DIRECTORY</span>
+            <h2>All Student Records</h2>
+            <p class="count">Total records: {{ students|length }}</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Roll No.</th>
+                            <th>Name</th>
+                            <th>Marks</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ student.roll }}</td>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.marks }}</td>
+                            <td>
+                                <form method="POST"
+                                      action="{{ url_for('admin_delete_student', roll=student.roll) }}"
+                                      onsubmit="return confirm('Delete this student?');">
+                                    <button class="delete" type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="empty">
+                                No student records found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
